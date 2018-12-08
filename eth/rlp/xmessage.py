@@ -57,7 +57,7 @@ class BaseXMessageFields(rlp.Serializable):
 class BaseXMessage(BaseXMessageFields, BaseXMessageMethods):
     @classmethod
     def from_base_xmessage(cls, xmessage: 'BaseXMessage') -> 'BaseXMessage':
-        return rlp.decode(rlp.encode(transaction), sedes=cls)
+        return rlp.decode(rlp.encode(xmessage), sedes=cls)
 
     @property
     def sender(self) -> Address:
