@@ -4,11 +4,25 @@ from rlp.sedes import (
     binary,
 )
 
-from .sedes import (
+from eth.rlp.sedes import (
     address,
     hash32,
     uint256,
     trie_root,
+)
+
+from eth_typing import (
+    Address,
+    Hash32,
+)
+
+from eth.constants import (
+    ZERO_ADDRESS,
+    ZERO_HASH32,
+    EMPTY_UNCLE_HASH,
+    GENESIS_NONCE,
+    GENESIS_PARENT_HASH,
+    BLANK_ROOT_HASH,
 )
 
 from eth.rlp.headers import (
@@ -57,29 +71,6 @@ class StretchBlockHeader(BlockHeader):
         ('mix_hash', binary),
         ('nonce', Binary(8, allow_empty=True))
     ]
-
-    @overload
-    def __init__(self, **kwargs: HeaderParams) -> None:
-        ...
-
-    @overload  # noqa: F811
-    def __init__(self,
-                 difficulty: int,
-                 block_number: int,
-                 gas_limit: int,
-                 timestamp: int=None,
-                 coinbase: Address=ZERO_ADDRESS,
-                 parent_hash: Hash32=ZERO_HASH32,
-                 uncles_hash: Hash32=EMPTY_UNCLE_HASH,
-                 state_root: Hash32=BLANK_ROOT_HASH,
-                 transaction_root: Hash32=BLANK_ROOT_HASH,
-                 receipt_root: Hash32=BLANK_ROOT_HASH,
-                 bloom: int=0,
-                 gas_used: int=0,
-                 extra_data: bytes=b'',
-                 mix_hash: Hash32=ZERO_HASH32,
-                 nonce: bytes=GENESIS_NONCE) -> None:
-        ...
 
     def __init__(self,              # type: ignore  # noqa: F811
                  shard_id: int,
