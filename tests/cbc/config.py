@@ -3,6 +3,7 @@ from eth_utils import decode_hex, encode_hex, to_wei
 from eth_typing import Address
 from eth import constants
 from web3.auto import w3
+import json
 
 def convert_pri_key_to_address(pri_key):
     return Address(keys.PrivateKey(decode_hex(pri_key)).public_key.to_canonical_address())
@@ -10,6 +11,12 @@ def convert_pri_key_to_address(pri_key):
 MAGIC_PRI_KEY = w3.eth.account.create().privateKey.hex()
 MAGIC_ADDRESS = convert_pri_key_to_address(MAGIC_PRI_KEY)
 MAGIC_FUNDS = to_wei(100000, 'ether')
+
+
+CALLEE_PRI_KEY = w3.eth.account.create().privateKey.hex()
+CALLEE_ADDRESS = convert_pri_key_to_address(CALLEE_PRI_KEY)
+CALLEE_ABI = json.loads('[{"constant":false,"inputs":[],"name":"setYto3","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[],"name":"setYto7","outputs":[],"payable":true,"stateMutability":"payable","type":"function"}]')
+CALLEE_BIN = "0x608060405260008055348015601357600080fd5b50609e806100226000396000f3006080604052600436106049576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680632255aa3e14604e5780635bbaac10146056575b600080fd5b6054605e565b005b605c6068565b005b6003600081905550565b60076000819055505600a165627a7a723058204d3ec0764e521b6d66452b597340deb59c6b19ddce7ff61fe021f8117d04ec2f0029"
 
 SHARDS_CONFIG = {
     0: {
@@ -62,6 +69,12 @@ SHARDS_CONFIG = {
                 'nonce': 0,
                 'code': b'',
                 'storage': {}
+            },
+            CALLEE_ADDRESS: {
+                'balance': MAGIC_FUNDS,
+                'nonce': 0,
+                'code': decode_hex(CALLEE_BIN),
+                'storage': {}
             }
         },
         'PRI_KEYS': [w3.eth.account.create().privateKey.hex() for x in range(5)],
@@ -76,7 +89,7 @@ for shard_id in SHARD_IDS:
 for shard_id in SHARD_IDS:
     for address in SHARDS_CONFIG[shard_id]['ADDRESSES']:
         SHARDS_CONFIG[shard_id]['GENESIS_STATE'][address] = {
-            'balance': to_wei(10, 'ether'),
+            'balance': to_wei(10000000000000000000000000000, 'ether'),
             'nonce': 0,
             'code': b'',
             'storage': {}
