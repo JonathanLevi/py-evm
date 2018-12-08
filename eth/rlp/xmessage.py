@@ -81,19 +81,11 @@ class BaseXMessage(BaseXMessageFields, BaseXMessageMethods):
         raise NotImplementedError("Must be implemented by subclasses")
 
 
-    @abstractmethod
     def get_sender(self) -> Address:
         """
         Get the 20-byte address which sent this xmessage.
         """
         return self.sender
-
-    @classmethod
-    def from_transaction(cls, tx, shard_id, base):
-        xmessage_dict = tx.copy()
-        xmessage_dict['sender'] = tx.sender
-        xmessage_dict['shard_id'] = tx.shard_id
-        xmessage_dict['base'] = tx.base
 
     def get_transaction_dict(self):
         return {

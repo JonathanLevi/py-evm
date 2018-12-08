@@ -16,6 +16,20 @@ class StretchXMessage(BaseXMessage):
     def validate(self):
         assert False, "Yet to implement"
 
+    @classmethod
+    def from_transaction(cls, tx, shard_id, base):
+        xmessage_dict = {
+            'gas_price': tx.gas_price,
+            'gas': tx.gas,
+            'to': tx.to,
+            'value': tx.value,
+            'data': tx.data,
+            'sender': tx.sender,
+            'shard_id': shard_id,
+            'base': base,
+        }
+        return cls(**xmessage_dict)
+
 
 class StretchXMessageReceived(StretchXMessage):
     fields = [
@@ -30,6 +44,7 @@ class StretchXMessageReceived(StretchXMessage):
         ('source_shard_id', big_endian_int),
         ('source', hash32),
     ]
+
 
     @classmethod
     def from_transaction(cls, tx, shard_id, base, source_shard_id, source):
