@@ -33,6 +33,8 @@ from eth_bloom import (
     BloomFilter,
 )
 
+import config
+
 class StretchBlock(ByzantiumBlock):
     transaction_class = ByzantiumTransaction
     xmessage_sent_class = StretchXMessage

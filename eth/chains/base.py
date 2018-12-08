@@ -125,6 +125,8 @@ if TYPE_CHECKING:
         BaseVM,
     )
 
+from eth.vm.forks.stretch.xmessage import StretchXMessage
+from eth.vm.forks.stretch import StretchVM
 
 class BaseChain(Configurable, ABC):
     """
@@ -888,6 +890,57 @@ class MiningChain(Chain):
         self.header = new_block.header
 
         return new_block, receipt, computation
+
+    def apply_xmessage_sent(self,
+                          xmessage: StretchXMessage
+                          ) -> BaseBlock:
+        """
+        Applies the sent xmessage to the current tip block.
+
+        WARNING: XMessage trie generation is computationally
+        heavy and incurs significant perferomance overhead.
+        """
+        vm = self.get_vm(self.header)
+        assert isinstance(vm, StretchVM), "ShardedMiningChain VM must be StretchVM or subclass"
+        base_block = vm.block
+
+        xmessage_sent = base_block.xmessage_sent + (xmessage, )
+
+        new_block = vm.set_block_xmessage_sent(base_block, xmessage_sent)
+
+        self.header = new_block.header
+
+        return new_block
+
+    def apply_xmessage_received(self,
+                          xmessage: StretchXMessage
+                          ) -> BaseBlock:
+        """
+        Applies the sent xmessage to the current tip block.
+
+        WARNING: XMessage trie generation is computationally
+        heavy and incurs significant perferomance overhead.
+        """
+        vm = self.get_vm(self.header)
+        assert isinstance(vm, StretchVM), "ShardedMiningChain VM must be StretchVM or subclass"
+        base_block = vm.block
+
+        xmessages_received = base_block.xmessages_received + (xmessage, )
+
+        new_block = vm.set_block_xmessages_received(base_block, xmessages_received)
+
+        print("TODO: Apply received xmessage tx")
+
+        unsigned_tx_dict = xmessage.get_transaction_dict()
+        nonce = vm.state.account_db.get_nonce(config.MAGIC_ADDRESS)
+        unsigned_tx_dict['nonce'] = nonce
+        unsigned_tx = vm.create_unsigned_transaction(**unsigned_tx_dict)
+        magic_pri_key = keys.PrivateKey(decode_hex(config.MAGIC_PRI_KEY))
+        tx = unsigned_tx.as_signed_transaction(magic_pri_key)
+
+        self.header = new_block.header
+
+        return new_block
 
     def import_block(self,
                      block: BaseBlock,

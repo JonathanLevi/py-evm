@@ -103,5 +103,4 @@ nonce, mix_hash = mine_pow_nonce(
 )
 print(chains[0].mine_block(mix_hash=mix_hash, nonce=nonce))
 print(block.xmessage_sent)
-
 print(block.xmessage_sent[0].get_transaction_dict())
