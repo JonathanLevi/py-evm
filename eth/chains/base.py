@@ -935,7 +935,7 @@ class MiningChain(Chain):
 
         new_block = vm.set_block_xmessage_received(base_block, xmessage_received)
 
-        print("TODO: Apply received xmessage tx")
+        # print("TODO: Apply received xmessage tx")
 
         unsigned_tx_dict = xmessage.get_transaction_dict()
         nonce = vm.state.account_db.get_nonce(config.MAGIC_ADDRESS)

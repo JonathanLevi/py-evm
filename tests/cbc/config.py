@@ -89,7 +89,7 @@ for shard_id in SHARD_IDS:
 for shard_id in SHARD_IDS:
     for address in SHARDS_CONFIG[shard_id]['ADDRESSES']:
         SHARDS_CONFIG[shard_id]['GENESIS_STATE'][address] = {
-            'balance': to_wei(10000000000000000000000000000, 'ether'),
+            'balance': to_wei(1, 'ether'),
             'nonce': 0,
             'code': b'',
             'storage': {}
