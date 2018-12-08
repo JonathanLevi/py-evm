@@ -31,7 +31,7 @@ SHARDS_CONFIG = {
                     'receipt_root': constants.BLANK_ROOT_HASH,
                     'difficulty': 1,
                     'block_number': constants.GENESIS_BLOCK_NUMBER,
-                    'gas_limit': 1000000,
+                    'gas_limit': 30000000,
                     'timestamp': 1544286352,
                     'extra_data': constants.GENESIS_EXTRA_DATA,
                     'nonce': constants.GENESIS_NONCE
@@ -58,7 +58,7 @@ SHARDS_CONFIG = {
                     'receipt_root': constants.BLANK_ROOT_HASH,
                     'difficulty': 1,
                     'block_number': constants.GENESIS_BLOCK_NUMBER,
-                    'gas_limit': 1000000,
+                    'gas_limit': 30000000,
                     'timestamp': 1544286352,
                     'extra_data': constants.GENESIS_EXTRA_DATA,
                     'nonce': constants.GENESIS_NONCE
@@ -94,3 +94,5 @@ for shard_id in SHARD_IDS:
             'code': b'',
             'storage': {}
         }
+
+SHARDS_CONFIG[1]['ADDRESSES'].append(CALLEE_ADDRESS)
