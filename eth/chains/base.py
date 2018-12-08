@@ -1,5 +1,11 @@
 from __future__ import absolute_import
 
+import config
+from eth_keys import keys
+from eth_utils import encode_hex, decode_hex
+from eth_typing import Address
+
+
 from abc import (
     ABC,
     abstractmethod
@@ -925,9 +931,9 @@ class MiningChain(Chain):
         assert isinstance(vm, StretchVM), "ShardedMiningChain VM must be StretchVM or subclass"
         base_block = vm.block
 
-        xmessages_received = base_block.xmessages_received + (xmessage, )
+        xmessage_received = base_block.xmessage_received + (xmessage, )
 
-        new_block = vm.set_block_xmessages_received(base_block, xmessages_received)
+        new_block = vm.set_block_xmessage_received(base_block, xmessage_received)
 
         print("TODO: Apply received xmessage tx")
 
@@ -937,8 +943,9 @@ class MiningChain(Chain):
         unsigned_tx = vm.create_unsigned_transaction(**unsigned_tx_dict)
         magic_pri_key = keys.PrivateKey(decode_hex(config.MAGIC_PRI_KEY))
         tx = unsigned_tx.as_signed_transaction(magic_pri_key)
-
         self.header = new_block.header
+
+        self.apply_transaction(tx)
 
         return new_block
 

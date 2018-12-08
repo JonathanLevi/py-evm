@@ -15,7 +15,7 @@ from config import (
     SHARD_IDS
 )
 import random
-from eth.vm.forks.stretch.xmessage import StretchXMessage
+from eth.vm.forks.stretch.xmessage import StretchXMessage, StretchXMessageReceived
 
 klass = MiningChain.configure(
                 __name__='TestChain',
@@ -70,7 +70,9 @@ for i in SHARD_IDS:
 #         current_block = chains[i].get_block_by_header(chains[i].get_canonical_head())
 #         print("Current Block:", current_block)
 
-sender_pri_key = keys.PrivateKey(decode_hex(MAGIC_PRI_KEY))
+
+# ------------------------------------------------
+
 nonce = chains[0].get_vm().state.account_db.get_nonce(SHARDS_CONFIG[0]['ADDRESSES'][0])
 tx = chains[0].get_vm().create_unsigned_transaction(
     nonce=nonce,
@@ -95,12 +97,42 @@ signed_tx = tx.as_signed_transaction(keys.PrivateKey(decode_hex(SHARDS_CONFIG[0]
 
 xmessage = StretchXMessage.from_transaction(signed_tx, 1, constants.ZERO_HASH32)
 chains[0].apply_xmessage_sent(xmessage)
-block = chains[0].get_vm().finalize_block(chains[0].get_block())
+blockA0 = chains[0].get_vm().finalize_block(chains[0].get_block())
 nonce, mix_hash = mine_pow_nonce(
-    block.number,
-    block.header.mining_hash,
-    block.header.difficulty
+    blockA0.number,
+    blockA0.header.mining_hash,
+    blockA0.header.difficulty
 )
 print(chains[0].mine_block(mix_hash=mix_hash, nonce=nonce))
-print(block.xmessage_sent)
-print(block.xmessage_sent[0].get_transaction_dict())
+print(blockA0.xmessage_sent)
+print(blockA0.xmessage_sent[0].get_transaction_dict())
+
+# ------------------------------------------------
+
+nonce = chains[1].get_vm().state.account_db.get_nonce(MAGIC_ADDRESS)
+tx_dict = blockA0.xmessage_sent[0].get_transaction_dict()
+print(tx_dict)
+tx = chains[1].get_vm().create_unsigned_transaction(
+    nonce=nonce,
+    gas_price=tx_dict['gas_price'],
+    gas=tx_dict['gas'],
+    to=tx_dict['to'],
+    value=tx_dict['value'],
+    data=tx_dict['data']
+)
+signed_tx = tx.as_signed_transaction(keys.PrivateKey(decode_hex(MAGIC_PRI_KEY)))
+xmessage_recv = StretchXMessageReceived.from_transaction(signed_tx, blockA0.xmessage_sent[0].shard_id, blockA0.xmessage_sent[0].base, 0, constants.ZERO_HASH32)
+print(xmessage_recv)
+
+chains[1].apply_xmessage_received(xmessage_recv)
+blockB0 = chains[1].get_vm().finalize_block(chains[1].get_block())
+nonce, mix_hash = mine_pow_nonce(
+    blockB0.number,
+    blockB0.header.mining_hash,
+    blockB0.header.difficulty
+)
+print(chains[1].mine_block(mix_hash=mix_hash, nonce=nonce))
+print(blockB0.xmessage_received)
+print(blockB0.xmessage_received[0].get_transaction_dict())
+
+print(blockB0.transactions)
