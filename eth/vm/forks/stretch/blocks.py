@@ -27,7 +27,7 @@ class StretchBlock(ByzantiumBlock):
     fields = [
         ('header', StretchBlockHeader),
         ('transactions', CountableList(transaction_class)),
-        ('xmessages_sent', CountableList(xmessage_sent_class)),
-        ('xmessages_received', CountableList(xmessage_received_class)),
+        # ('xmessages_sent', CountableList(xmessage_sent_class)),
+        # ('xmessages_received', CountableList(xmessage_received_class)),
         ('uncles', CountableList(StretchBlockHeader))
     ]
