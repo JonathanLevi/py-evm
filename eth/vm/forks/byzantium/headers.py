@@ -78,6 +78,7 @@ def create_header_from_parent(difficulty_fn: Callable[[BlockHeader, int], int],
                               parent_header: BlockHeader,
                               **header_params: Any) -> BlockHeader:
 
+    header_params['shard_id'] = parent_header.shard_id
     if 'difficulty' not in header_params:
         header_params.setdefault('timestamp', parent_header.timestamp + 1)
 

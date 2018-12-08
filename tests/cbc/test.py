@@ -21,7 +21,7 @@ klass = MiningChain.configure(
                                 )
                             )
 
-chain = klass.from_genesis(AtomicDB(), SHARDS_CONFIG[0]['GENESIS_PARAMS'])
+chain = klass.from_genesis(AtomicDB(), SHARDS_CONFIG[1]['GENESIS_PARAMS'])
 
 vm = chain.get_vm()
 nonce = vm.state.account_db.get_nonce(MAGIC_ADDRESS)
@@ -67,3 +67,5 @@ print(chain.mine_block(mix_hash=mix_hash, nonce=nonce))
 
 current_block = chain.get_block_by_header(chain.get_canonical_head())
 print("Current Block:", current_block)
+
+print(block.header.shard_id)
