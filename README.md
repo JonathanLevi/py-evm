@@ -3,6 +3,8 @@
 [![Join the chat at https://gitter.im/ethereum/py-evm](https://badges.gitter.im/ethereum/py-evm.svg)](https://gitter.im/ethereum/py-evm)
 [![Documentation Status](https://readthedocs.org/projects/py-evm/badge/?version=latest)](http://py-evm.readthedocs.io/en/latest/?badge=latest)
 
+![Image](img/shardia.jpg)
+![Image](img/shardib.jpg)
 
 ## Py-EVM
 
@@ -13,7 +15,7 @@ Ethereum 2.0 / Serenity spec.
 ### Goals
 
 Py-EVM aims to eventually become the defacto Python implementation of the Ethereum protocol,
-enabling a wide array of use cases for both public and private chains. 
+enabling a wide array of use cases for both public and private chains.
 
 In particular Py-EVM aims to:
 
