@@ -915,5 +915,4 @@ class MiningChain(Chain):
     def get_vm(self, at_header: BlockHeader=None) -> 'BaseVM':
         if at_header is None:
             at_header = self.header
-
         return super().get_vm(at_header)

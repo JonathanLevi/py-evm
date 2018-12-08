@@ -42,6 +42,7 @@ from eth.rlp.headers import (
 from eth.rlp.receipts import (
     Receipt
 )
+from eth.rlp.headers import BlockHeader
 from eth.validation import (
     validate_word,
 )
@@ -62,7 +63,6 @@ if TYPE_CHECKING:
         BaseBlock,
         BaseTransaction
     )
-
 
 class TransactionKey(rlp.Serializable):
     fields = [
@@ -317,7 +317,7 @@ class ChainDB(HeaderDB, BaseChainDB):
 
     def get_xmessage_sent(
             self,
-            header: StretchBlockHeader,
+            header: BlockHeader,
             xmessage_sent_class: Type['BaseXMessage']) -> Iterable['BaseXMessage']:
         """
         Returns an iterable of transactions for the block speficied by the
@@ -339,7 +339,7 @@ class ChainDB(HeaderDB, BaseChainDB):
 
     def get_xmessage_received(
             self,
-            header: StretchBlockHeader,
+            header: BlockHeader,
             xmessage_received_class: Type['BaseXMessageReceived']) -> Iterable['BaseXMessageReceived']:
         """
         Returns an iterable of transactions for the block speficied by the
