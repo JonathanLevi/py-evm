@@ -23,13 +23,13 @@ from eth.vm.forks.byzantium.transactions import (
     ByzantiumTransaction,
 )
 
-from eth.vm.forks.stretch.headers import (
-    StretchBlockHeader
-)
-
 from eth.vm.forks.stretch.xmessage import (
     StretchXMessage,
     StretchXMessageReceived
+)
+
+from eth_bloom import (
+    BloomFilter,
 )
 
 class StretchBlock(ByzantiumBlock):
@@ -37,11 +37,11 @@ class StretchBlock(ByzantiumBlock):
     xmessage_sent_class = StretchXMessage
     xmessage_received_class = StretchXMessageReceived
     fields = [
-        ('header', StretchBlockHeader),
+        ('header', BlockHeader),
         ('transactions', CountableList(transaction_class)),
         ('xmessage_sent', CountableList(xmessage_sent_class)),
         ('xmessage_received', CountableList(xmessage_received_class)),
-        ('uncles', CountableList(StretchBlockHeader))
+        ('uncles', CountableList(BlockHeader))
     ]
 
     def __init__(self,
@@ -79,7 +79,7 @@ class StretchBlock(ByzantiumBlock):
     # Header API
     #
     @classmethod
-    def from_header(cls, header: StretchBlockHeader, chaindb: BaseChainDB) -> BaseBlock:
+    def from_header(cls, header: BlockHeader, chaindb: BaseChainDB) -> BaseBlock:
         """
         Returns the block denoted by the given block header.
         """
@@ -90,10 +90,11 @@ class StretchBlock(ByzantiumBlock):
             uncles = chaindb.get_block_uncles(header.uncles_hash)
 
         transactions = chaindb.get_block_transactions(header, cls.get_transaction_class())
-        print("Calling get_xmessage_sent()")
+        print("Calling get_block_xmessage_sent()")
+        print(header)
         print(type(header))
-        xmessage_sent = chaindb.get_xmessage_sent(header, cls.get_xmessage_sent_class())
-        xmessage_received = chaindb.get_xmessage_received(header, cls.get_xmessage_received_class())
+        xmessage_sent = chaindb.get_block_xmessage_sent(header, cls.get_xmessage_sent_class())
+        xmessage_received = chaindb.get_block_xmessage_received(header, cls.get_xmessage_received_class())
 
         return cls(
             header=header,

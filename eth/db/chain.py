@@ -315,49 +315,100 @@ class ChainDB(HeaderDB, BaseChainDB):
         """
         return self._get_block_transactions(header.transaction_root, transaction_class)
 
-    def get_xmessage_sent(
+    @functools.lru_cache(maxsize=32)
+    @to_list
+    def _get_block_transactions(
+            self,
+            transaction_root: Hash32,
+            transaction_class: Type['BaseTransaction']) -> Iterable['BaseTransaction']:
+        """
+        Memoizable version of `get_block_transactions`
+        """
+        for encoded_transaction in self._get_block_transaction_data(self.db, transaction_root):
+            yield rlp.decode(encoded_transaction, sedes=transaction_class)
+
+    @staticmethod
+    def _get_block_transaction_data(db: BaseDB, transaction_root: Hash32) -> Iterable[Hash32]:
+        '''
+        Returns iterable of the encoded transactions for the given block header
+        '''
+        transaction_db = HexaryTrie(db, root_hash=transaction_root)
+        for transaction_idx in itertools.count():
+            transaction_key = rlp.encode(transaction_idx)
+            if transaction_key in transaction_db:
+                yield transaction_db[transaction_key]
+            else:
+                break
+
+    def get_block_xmessage_sent(
             self,
             header: BlockHeader,
-            xmessage_sent_class: Type['BaseXMessage']) -> Iterable['BaseXMessage']:
+            xmessage_class: Type['BaseXMessage']) -> Iterable['BaseXMessage']:
         """
-        Returns an iterable of transactions for the block speficied by the
+        Returns an iterable of sent xmessage for the block speficied by the
         given block header.
         """
-        return self._get_xmessage_sent(header.xmessage_sent_root, transaction_class)
+        return self._get_block_xmessage_sent(header.xmessage_sent_root, xmessage_class)
+
+    @staticmethod
+    def _get_block_xmessage_sent_data(db: BaseDB, xmessage_sent_root: Hash32) -> Iterable[Hash32]:
+        '''
+        Returns iterable of the encoded sent xmessage for the given block header
+        '''
+        xmessage_sent_db = HexaryTrie(db, root_hash=xmessage_sent_root)
+        for xmessage_sent_idx in itertools.count():
+            xmessage_sent_key = rlp.encode(xmessage_sent_idx)
+            if xmessage_sent_key in xmessage_sent_db:
+                yield xmessage_sent_db[xmessage_sent_key]
+            else:
+                break
 
     @functools.lru_cache(maxsize=32)
     @to_list
-    def _get_xmessage_sent(
+    def _get_block_xmessage_sent(
             self,
             xmessage_sent_root: Hash32,
-            xmessage_sent_class: Type['BaseXMessage']) -> Iterable['BaseXMessage']:
+            xmessage_class: Type['BaseXMessage']) -> Iterable['BaseXMessage']:
         """
-        Memoizable version of `get_block_transactions`
+        Memoizable version of `get_block_xmessage_sent`
         """
-        for encoded_xmessage_sent in self._get_block_xmessage_sent(self.db, xmessage_sent_root):
-            yield rlp.decode(encoded_xmessage_sent, sedes=xmessage_sent_class)
+        for encoded_xmessage in self._get_block_xmessage_sent_data(self.db, xmessage_sent_root):
+            yield rlp.decode(encoded_xmessage, sedes=xmessage_class)
 
-    def get_xmessage_received(
+    def get_block_xmessage_received(
             self,
             header: BlockHeader,
-            xmessage_received_class: Type['BaseXMessageReceived']) -> Iterable['BaseXMessageReceived']:
+            xmessage_received_class: Type['BaseXMessage']) -> Iterable['BaseXMessage']:
         """
-        Returns an iterable of transactions for the block speficied by the
+        Returns an iterable of received xmessage for the block speficied by the
         given block header.
         """
-        return self._get_xmessage_received(header.xmessage_received_root, xmessage_received_class)
+        return self._get_block_xmessage_received(header.xmessage_received_root, xmessage_received_class)
+
+    @staticmethod
+    def _get_block_xmessage_received_data(db: BaseDB, xmessage_received_root: Hash32) -> Iterable[Hash32]:
+        '''
+        Returns iterable of the encoded received xmessage for the given block header
+        '''
+        xmessage_received_db = HexaryTrie(db, root_hash=xmessage_received_root)
+        for xmessage_received_idx in itertools.count():
+            xmessage_received_key = rlp.encode(xmessage_received_idx)
+            if xmessage_received_key in xmessage_received_db:
+                yield xmessage_received_db[xmessage_received_key]
+            else:
+                break
 
     @functools.lru_cache(maxsize=32)
     @to_list
-    def _get_block_received(
+    def _get_block_xmessage_received(
             self,
             xmessage_received_root: Hash32,
-            xmessage_received_class: Type['BaseXMessageReceived']) -> Iterable['BaseXMessageReceived']:
+            xmessage_received_class: Type['BaseXMessage']) -> Iterable['BaseXMessage']:
         """
-        Memoizable version of `get_block_transactions`
+        Memoizable version of `get_block_xmessage_received`
         """
-        for encoded_xmessage_received in self._get_block_xmessage_received(self.db, xmessage_received_root):
-            yield rlp.decode(encoded_xmessage_received, sedes=xmessage_received_class)
+        for encoded_xmessage in self._get_block_xmessage_received_data(self.db, xmessage_received_root):
+            yield rlp.decode(encoded_xmessage, sedes=xmessage_received_class)
 
     def get_block_transaction_hashes(self, block_header: BlockHeader) -> Iterable[Hash32]:
         """
@@ -438,55 +489,6 @@ class ChainDB(HeaderDB, BaseChainDB):
 
         transaction_key = rlp.decode(encoded_key, sedes=TransactionKey)
         return (transaction_key.block_number, transaction_key.index)
-
-    @staticmethod
-    def _get_block_transaction_data(db: BaseDB, transaction_root: Hash32) -> Iterable[Hash32]:
-        '''
-        Returns iterable of the encoded transactions for the given block header
-        '''
-        transaction_db = HexaryTrie(db, root_hash=transaction_root)
-        for transaction_idx in itertools.count():
-            transaction_key = rlp.encode(transaction_idx)
-            if transaction_key in transaction_db:
-                yield transaction_db[transaction_key]
-            else:
-                break
-
-    def _get_block_xmessage_sent(db: BaseDB, xmessage_sent_root: Hash32) -> Iterable[Hash32]:
-        '''
-        Returns iterable of the encoded transactions for the given block header
-        '''
-        xmessage_sent_db = HexaryTrie(db, root_hash=xmessage_sent_root)
-        for xmessage_sent_idx in itertools.count():
-            xmessage_sent_key = rlp.encode(xmessage_sent_idx)
-            if xmessage_sent_key in xmessage_sent_db:
-                yield xmessage_sent_db[xmessage_sent_key]
-            else:
-                break
-
-    def _get_block_xmessage_received(db: BaseDB, xmessage_received_root: Hash32) -> Iterable[Hash32]:
-        '''
-        Returns iterable of the encoded transactions for the given block header
-        '''
-        xmessage_received_db = HexaryTrie(db, root_hash=xmessage_received_root)
-        for xmessage_received_idx in itertools.count():
-            xmessage_received_key = rlp.encode(xmessage_received_idx)
-            if xmessage_received_key in xmessage_received_db:
-                yield xmessage_received_db[xmessage_received_key]
-            else:
-                break
-
-    @functools.lru_cache(maxsize=32)
-    @to_list
-    def _get_block_transactions(
-            self,
-            transaction_root: Hash32,
-            transaction_class: Type['BaseTransaction']) -> Iterable['BaseTransaction']:
-        """
-        Memoizable version of `get_block_transactions`
-        """
-        for encoded_transaction in self._get_block_transaction_data(self.db, transaction_root):
-            yield rlp.decode(encoded_transaction, sedes=transaction_class)
 
     @staticmethod
     def _remove_transaction_from_canonical_chain(db: BaseDB, transaction_hash: Hash32) -> None:

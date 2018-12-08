@@ -47,11 +47,14 @@ from .sedes import (
 
 class MiningHeader(rlp.Serializable):
     fields = [
+        ('shard_id', big_endian_int),
         ('parent_hash', hash32),
         ('uncles_hash', hash32),
         ('coinbase', address),
         ('state_root', trie_root),
         ('transaction_root', trie_root),
+        ('xmessage_sent_root', trie_root),
+        ('xmessage_received_root', trie_root),
         ('receipt_root', trie_root),
         ('bloom', uint256),
         ('difficulty', big_endian_int),
@@ -68,11 +71,14 @@ HeaderParams = Union[Optional[int], bytes, Address, Hash32]
 
 class BlockHeader(rlp.Serializable):
     fields = [
+        ('shard_id', big_endian_int),
         ('parent_hash', hash32),
         ('uncles_hash', hash32),
         ('coinbase', address),
         ('state_root', trie_root),
         ('transaction_root', trie_root),
+        ('xmessage_sent_root', trie_root),
+        ('xmessage_received_root', trie_root),
         ('receipt_root', trie_root),
         ('bloom', uint256),
         ('difficulty', big_endian_int),
@@ -96,10 +102,13 @@ class BlockHeader(rlp.Serializable):
                  gas_limit: int,
                  timestamp: int=None,
                  coinbase: Address=ZERO_ADDRESS,
+                 shard_id: int=0,
                  parent_hash: Hash32=ZERO_HASH32,
                  uncles_hash: Hash32=EMPTY_UNCLE_HASH,
                  state_root: Hash32=BLANK_ROOT_HASH,
                  transaction_root: Hash32=BLANK_ROOT_HASH,
+                 xmessage_sent_root: Hash32=BLANK_ROOT_HASH,
+                 xmessage_received_root: Hash32=BLANK_ROOT_HASH,
                  receipt_root: Hash32=BLANK_ROOT_HASH,
                  bloom: int=0,
                  gas_used: int=0,
@@ -114,10 +123,13 @@ class BlockHeader(rlp.Serializable):
                  gas_limit: int,
                  timestamp: int=None,
                  coinbase: Address=ZERO_ADDRESS,
+                 shard_id: int=0,
                  parent_hash: Hash32=ZERO_HASH32,
                  uncles_hash: Hash32=EMPTY_UNCLE_HASH,
                  state_root: Hash32=BLANK_ROOT_HASH,
                  transaction_root: Hash32=BLANK_ROOT_HASH,
+                 xmessage_sent_root: Hash32=BLANK_ROOT_HASH,
+                 xmessage_received_root: Hash32=BLANK_ROOT_HASH,
                  receipt_root: Hash32=BLANK_ROOT_HASH,
                  bloom: int=0,
                  gas_used: int=0,
@@ -127,11 +139,14 @@ class BlockHeader(rlp.Serializable):
         if timestamp is None:
             timestamp = int(time.time())
         super().__init__(
+            shard_id=shard_id,
             parent_hash=parent_hash,
             uncles_hash=uncles_hash,
             coinbase=coinbase,
             state_root=state_root,
             transaction_root=transaction_root,
+            xmessage_sent_root=xmessage_sent_root,
+            xmessage_received_root=xmessage_received_root,
             receipt_root=receipt_root,
             bloom=bloom,
             difficulty=difficulty,
@@ -172,6 +187,7 @@ class BlockHeader(rlp.Serializable):
                     gas_limit: int,
                     difficulty: int,
                     timestamp: int,
+                    shard_id: int=0,
                     coinbase: Address=ZERO_ADDRESS,
                     nonce: bytes=None,
                     extra_data: bytes=None,
@@ -182,6 +198,7 @@ class BlockHeader(rlp.Serializable):
         parent hash.
         """
         header_kwargs = {
+            'shard_id': shard_id,
             'parent_hash': parent.hash,
             'coinbase': coinbase,
             'state_root': parent.state_root,

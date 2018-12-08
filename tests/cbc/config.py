@@ -14,13 +14,13 @@ MAGIC_FUNDS = to_wei(100000, 'ether')
 SHARDS_CONFIG = {
     0: {
         'GENESIS_PARAMS': {
-                    # 'shard_id': 0,
+                    'shard_id': 0,
                     'parent_hash': constants.GENESIS_PARENT_HASH,
                     'uncles_hash': constants.EMPTY_UNCLE_HASH,
                     'coinbase': constants.ZERO_ADDRESS,
                     'transaction_root': constants.BLANK_ROOT_HASH,
-                    # 'xmessage_sent_root': constants.BLANK_ROOT_HASH,
-                    # 'xmessage_received_root': constants.BLANK_ROOT_HASH,
+                    'xmessage_sent_root': constants.BLANK_ROOT_HASH,
+                    'xmessage_received_root': constants.BLANK_ROOT_HASH,
                     'receipt_root': constants.BLANK_ROOT_HASH,
                     'difficulty': 1,
                     'block_number': constants.GENESIS_BLOCK_NUMBER,
@@ -41,13 +41,13 @@ SHARDS_CONFIG = {
     },
     1: {
         'GENESIS_PARAMS': {
-                    # 'shard_id': 1,
+                    'shard_id': 1,
                     'parent_hash': constants.GENESIS_PARENT_HASH,
                     'uncles_hash': constants.EMPTY_UNCLE_HASH,
                     'coinbase': constants.ZERO_ADDRESS,
                     'transaction_root': constants.BLANK_ROOT_HASH,
-                    # 'xmessage_sent_root': constants.BLANK_ROOT_HASH,
-                    # 'xmessage_received_root': constants.BLANK_ROOT_HASH,
+                    'xmessage_sent_root': constants.BLANK_ROOT_HASH,
+                    'xmessage_received_root': constants.BLANK_ROOT_HASH,
                     'receipt_root': constants.BLANK_ROOT_HASH,
                     'difficulty': 1,
                     'block_number': constants.GENESIS_BLOCK_NUMBER,
